@@ -1,3 +1,7 @@
-Bonjour !
-Ceci est un test .
-Je découvre la lecture de fichiers en Go.
+BONJOUR tout le Monde
+CE TEXTE crie un peu trop
+Élise est arrivée
+en début de ligne
+un (truc) inconnu
+
+des espaces en trop
