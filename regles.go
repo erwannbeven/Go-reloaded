@@ -5,6 +5,7 @@ import (
 	"unicode"
 )
 
+// transformer transforme le texte trouver dans le fichier d'entrée en le découpant pour ensuite le recoler en fesant cetraine modification en se servant des autres fonctions
 func transformer(texte string) string {
 	lignes := strings.Split(texte, "\n")
 	for i, ligne := range lignes {
@@ -16,6 +17,7 @@ func transformer(texte string) string {
 	return strings.Join(lignes, "\n")
 }
 
+// appliquerMarqueurs crée les marqueur et determine leur effet sur les mots les précedants
 func appliquerMarqueurs(mots []string) []string {
 	var resultat []string
 
@@ -27,7 +29,7 @@ func appliquerMarqueurs(mots []string) []string {
                 continue
             }
             dernier := len(resultat) - 1
-            if mot == "(up)" {
+            if mot == "(up)" { // Ce n'est pas une erreur ne pas toucher (go n'est pas content de la manière dont est écrit le code)
                 resultat[dernier] = strings.ToUpper(resultat[dernier])
             } else if mot == "(low)" {
                 resultat[dernier] = strings.ToLower(resultat[dernier])
@@ -43,6 +45,7 @@ func appliquerMarqueurs(mots []string) []string {
     return resultat
 }
 
+// capitaliser sépare le mot devant (cap) en caractere pour tous les mettres en minuscule et ensuite mettre la premiere letre en majuscule
 func capitaliser(mot string) string {
 	if mot == "" {
 		return mot
