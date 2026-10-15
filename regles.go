@@ -1,6 +1,7 @@
 package main
 
 import (
+    "strconv"
 	"strings"
 	"unicode"
 )
@@ -36,6 +37,33 @@ func appliquerMarqueurs(mots []string) []string {
             } else if mot == "(cap)" {
                 resultat[dernier] = capitaliser(resultat[dernier])
             }
+            case "(hex)":
+			// On vérifie qu'il y a un mot avant
+			if len(resultat) == 0 {
+				continue
+			}
+			dernier := len(resultat) - 1
+			// Conversion de la base 16 (hexadécimal) vers un entier (int64)
+			decimalVal, err := strconv.ParseInt(resultat[dernier], 16, 64)
+			if err == nil {
+				// Si c'est un nombre hex valide, on le transforme en texte décimal (base 10)
+				resultat[dernier] = strconv.FormatInt(decimalVal, 10)
+			}
+			// Note : On n'ajoute PAS "(hex)" dans resultat, il disparaît du texte final.
+
+		case "(bin)":
+			// On vérifie qu'il y a un mot avant
+			if len(resultat) == 0 {
+				continue
+			}
+			dernier := len(resultat) - 1
+			// Conversion de la base 2 (binaire) vers un entier (int64)
+			decimalVal, err := strconv.ParseInt(resultat[dernier], 2, 64)
+			if err == nil {
+				// Si c'est un nombre binaire valide, on le transforme en texte décimal (base 10)
+				resultat[dernier] = strconv.FormatInt(decimalVal, 10)
+			}
+			// Note : On n'ajoute PAS "(bin)" dans resultat, il disparaît également.
         default:
             // Si c'est un mot normal (ou un marqueur inconnu comme (truc)), on l'ajoute
             resultat = append(resultat, mot)
