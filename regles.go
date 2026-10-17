@@ -12,9 +12,15 @@ func transformer(texte string) string {
 	lignes := strings.Split(texte, "\n")
 	for i, ligne := range lignes {
 	ligne = strings.TrimRight(ligne, "\r")
+
 	ligne = corrigerEspacesMarqueurs(ligne)
+
 	mots := strings.Fields(ligne)
+
+	mots = appliquerAAn(mots)
+
 	mots = appliquerMarqueurs(mots)
+
 	lignes[i] = strings.Join(mots, " ")
 }
 	return strings.Join(lignes, "\n")
@@ -116,4 +122,35 @@ func capitaliser(mot string) string {
 	lettres := []rune(strings.ToLower(mot))
 	lettres[0] = unicode.ToUpper(lettres[0])
 	return string(lettres)
+}
+
+func appliquerAAn(mots []string) []string {
+	for i := 0; i < len(mots); i++ {
+		if mots[i] == "a" || mots[i] == "A" {
+			// On cherche le prochain VRAI mot en sautant les balises (up, low, cap, hex, bin, etc.)
+			j := i + 1
+			for j < len(mots) && (strings.HasPrefix(mots[j], "(") && strings.HasSuffix(mots[j], ")") || strings.Contains(mots[j], ",")) {
+				j++
+			}
+
+			// Si on a trouvé un mot après les balises
+			if j < len(mots) {
+				prochainMot := mots[j]
+				if len(prochainMot) > 0 {
+					premiereLettre := rune(prochainMot[0])
+					lettreInf := unicode.ToLower(premiereLettre)
+
+					// Vérifie si le vrai mot suivant commence par une voyelle ou un 'h'[cite: 2]
+					if lettreInf == 'a' || lettreInf == 'e' || lettreInf == 'i' || lettreInf == 'o' || lettreInf == 'u' || lettreInf == 'h' {
+						if mots[i] == "A" {
+							mots[i] = "An"
+						} else {
+							mots[i] = "an"
+						}
+					}
+				}
+			}
+		}
+	}
+	return mots
 }
