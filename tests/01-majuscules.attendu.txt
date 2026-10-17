@@ -1,7 +1,7 @@
-BONJOUR tout le MONDE
+bonjour tout le MONDE
 CE TEXTE CRIE un peu trop
 ÉLISE est arrivée
-en début de LIGNE
+en DÉBUT DE LIGNE
 un inconnu
 des espaces en trop
 ÉXPLIQUÉ

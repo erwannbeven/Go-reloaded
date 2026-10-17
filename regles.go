@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
     "strconv"
 	"strings"
 	"unicode"
@@ -11,7 +12,7 @@ func transformer(texte string) string {
 	lignes := strings.Split(texte, "\n")
 	for i, ligne := range lignes {
 	ligne = strings.TrimRight(ligne, "\r")
-	ligne = normaliserMarqueurs(ligne)
+	ligne = corrigerEspacesMarqueurs(ligne)
 	mots := strings.Fields(ligne)
 	mots = appliquerMarqueurs(mots)
 	lignes[i] = strings.Join(mots, " ")
@@ -19,25 +20,12 @@ func transformer(texte string) string {
 	return strings.Join(lignes, "\n")
 }
 
-// normaliserMarqueurs supprime les espaces après les virgules dans les balises
-func normaliserMarqueurs(s string) string {
-	for _, m := range []string{"up", "low", "cap"} {
-		prefixe := "(" + m + ","
-		for {
-			idx := strings.Index(s, prefixe)
-			if idx == -1 {
-				break
-			}
-			fin := strings.Index(s[idx:], ")")
-			if fin == -1 {
-				break
-			}
-			bloc := s[idx : idx+fin+1]
-			blocSansEspaces := strings.ReplaceAll(bloc, " ", "")
-			s = strings.Replace(s, bloc, blocSansEspaces, 1)
-		}
-	}
-	return s
+// corrigerEspacesMarqueurs nettoie proprement sans boucle infinie
+func corrigerEspacesMarqueurs(s string) string {
+	// On cherche un motif du type (up, 1), (low,  2), etc., avec des espaces optionnels après la virgule
+	re := regexp.MustCompile(`\((up|low|cap),\s*([0-9]+)\)`)
+	// On remplace proprement par le format compact sans espace (ex: "(up,1)")
+	return re.ReplaceAllString(s, "($1,$2)")
 }
 
 // appliquerMarqueurs crée les marqueur et determine leur effet sur les mots les précedants
