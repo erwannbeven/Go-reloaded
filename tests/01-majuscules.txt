@@ -1,7 +1,7 @@
-bonjour (up) tout le monde (up)
+bonjour (up, 0) tout le monde (up, 1)
 CE TEXTE CRIE (up) un peu trop
 élise (up) est arrivée
-(up) en début de ligne (up)
+(up) en début de ligne (up, 3)
 un inconnu
 des espaces en trop
 éxpliqué (up)

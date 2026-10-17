@@ -1,10 +1,7 @@
-bonjour tout le monde
+bonjour 0) tout le monde 1)
 CE TEXTE CRIE un peu trop
-
-
-élise est arrivée
-en début de ligne
-un (truc) inconnu
-
+ÉLISE est arrivée
+en début de ligne 3)
+un inconnu
 des espaces en trop
-éxpliqué
+ÉXPLIQUÉ
