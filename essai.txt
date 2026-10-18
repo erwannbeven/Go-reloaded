@@ -11,3 +11,5 @@ Simply add 42 (hex) and 10 (bin) and you will see.
 It has been 10 (bin) years.
 A (up) amazing rock!
 This is so exciting (up, 2)
+
+"I was sitting over there , and then BAMM !!"

@@ -11,18 +11,20 @@ import (
 func transformer(texte string) string {
 	lignes := strings.Split(texte, "\n")
 	for i, ligne := range lignes {
-	ligne = strings.TrimRight(ligne, "\r")
+		ligne = strings.TrimRight(ligne, "\r")
+		
+		ligne = corrigerEspacesMarqueurs(ligne)
 
-	ligne = corrigerEspacesMarqueurs(ligne)
-
-	mots := strings.Fields(ligne)
-
-	mots = appliquerAAn(mots)
-
-	mots = appliquerMarqueurs(mots)
-
-	lignes[i] = strings.Join(mots, " ")
-}
+		mots := strings.Fields(ligne)
+		mots = appliquerAAn(mots)
+		mots = appliquerMarqueurs(mots)
+		
+		// 1. On réassemble la ligne avec des espaces simples
+		ligneTraitee := strings.Join(mots, " ")
+		
+		// 2. On applique la correction de la ponctuation
+		lignes[i] = corrigerPonctuation(ligneTraitee)
+	}
 	return strings.Join(lignes, "\n")
 }
 
@@ -153,4 +155,23 @@ func appliquerAAn(mots []string) []string {
 		}
 	}
 	return mots
+}
+
+func corrigerPonctuation(ligne string) string {
+	// 1. S'assurer qu'il y a un espace après un signe de ponctuation (s'il n'y en a pas déjà un)
+	// Exemple: "bonjour,tout" -> "bonjour, tout"
+	reEspaceApres := regexp.MustCompile(`([.,!?;:])([^\s"'])`)
+	ligne = reEspaceApres.ReplaceAllString(ligne, `$1 $2`)
+
+	// 2. Coller le signe de ponctuation au mot qui le précède (en supprimant l'espace avant)
+	// Exemple: "bonjour , tout" -> "bonjour, tout"
+	reEspaceAvant := regexp.MustCompile(`\s+([.,!?;:])`)
+	ligne = reEspaceAvant.ReplaceAllString(ligne, `$1`)
+
+	// 3. Nettoyer les espaces à l'intérieur des groupes de ponctuation (ex: ". . ." -> "...")
+	// On peut cibler des cas fréquents comme les points de suspension espacés
+	reGroupes := regexp.MustCompile(`\.\s*\.\s*\.`)
+	ligne = reGroupes.ReplaceAllString(ligne, "...")
+
+	return ligne
 }
