@@ -1,34 +1,65 @@
 # textfix
-ce programme sert a modifier un texte en utilisent des marqueurs
+
+`textfix` est un outil en Go conçu pour nettoyer et reformatter automatiquement un texte à l'aide de marqueurs spécifiques et de règles de ponctuation/grammaire.
 Exemple : (up), (low) et (cap)
+---
 
 ## Installation
-Clonez le projet ou téléchargez-le.
-Placez-vous dans le dossier racine du projet :
-   ```bash
-   cd textfix
-   ```
 
+Clonez le projet ou téléchargez-le, puis placez-vous dans le dossier racine du projet :
+
+```bash
+cd textfix
+```
 ## Utilisation
-pour démarer le programme il suffit d'entrée dans le terminal bash :
+Pour démarrer le programme, spécifiez le fichier d'entrée et le fichier de sortie dans le terminal :
 ```bash
 go run . entree.txt sortie.txt
 ```
-resultat:
+Exemple :
 
 entrée.txt:
-bonjour (cap) il (up) fait   nuit
+It was 10 (bin) times better than 42 (hex) , right?
+A (up) amazing adventure is starting here...
+I can't believe it, she said ' yes ' !
+This is so exciting (up, 2) and a amazing day.
 
 sortie.txt:
-Bonjour IL fait nuit
+It was 2 times better than 66, right?
+AN amazing adventure is starting here...
+I can't believe it, she said 'yes'!
+This is SO EXCITING and an amazing day.
 
 ## Les règles
+TOUJOUR mettre un espace après un marqueur si une virgule le suit
+exemple : mauvais
+entrée.txt:It was 10 (bin) times better than 42 (hex), right?
+sortie.txt:It was 2 times better than 42 (hex), right?
+exemple : correcte
+entrée.txt:It was 10 (bin) times better than 42 (hex) , right?
+sortie.txt:It was 2 times better than 66, right?
+
 
 | Marqueur | Effet | Exemple | Résultat |
 |---|---|---|---|
+1. Marqueurs de transformation de casse
 | `(up)` | met le mot precedant en entier en majuscule| bonjour (up)| BONJOUR|
+|`(up, N)`|Met les N mots précédents en majuscules|so exciting (up, 2)|SO EXCITING|
 | `(low)` | met le mot precedant en entier en minuscule| BONJOUR (low)| bonjour|
+|`(low, N)`|Met les N mots précédents en minuscules|TURN DOWN (low, 2)|turn down|
 | `(cap)` | met la premiere lettre du mot precedant en majuscule et le reste en minuscule| boNJOur (cap)| Bonjour|
+|`(cap, N)`|Capitalise les N mots précédents|salut tout le monde (cap, 2)|salut tout Le Monde|
+2. Conversions numériques
+|`(hex)`|Convertit un nombre hexadécimal en décimal|42 (hex)|66|
+|`(bin)`|Convertit un nombre binaire en décimal|10 (bin)|2|
+3. Grammaire (a / an)
+Le mot a devient an si le mot suivant commence par une voyelle (a, e, i, o, u) ou un h.La règle fonctionne même si des marqueurs (comme (up)) s'interposent entre a et le mot suivant.Exemple : a (up) amazing $\rightarrow$ AN amazing
+4. Ponctuation et Guillemets
+Ponctuation simple (., ,, !, ?, :, ;) : Collée au mot précédent, suivie d'un espace.
+
+Groupes de ponctuation (..., !?) : Restent contigus et collés au mot précédent.
+
+Guillemets simples (') : Le texte situé à l'intérieur est collé contre les guillemets sans espaces superflus.
 
 ## Les messages d'erreur
 Dans le cas ou vous n'auriez pas mis de nom de fichier il affichera :Erreur : il faut deux noms de fichiers.
@@ -46,11 +77,13 @@ donc la ligne final resenble a ça : diff sortie.txt tests/01-majuscules.attendu
 ## Organisation du code
 main.go : Vérifier les arguments, enchaîner les étapes, afficher les messages
 fichiers.go : Lire et écrire les fichiers
-regles.go : Transformer le texte
+regles.go : Logique de transformation du texte (marqueurs, conversions de base, règle a/an, ponctuation et guillemets).
 
 ## Limites
-Le programme ne gère pas les marqueurs collés directement au mot sans espace 
-exemple : mot(up) ne sera pas transformé correctement
+Le programme nécessite des espaces autour des marqueurs pour les détecter correctement (ex: mot (up) et non mot(up)).
+
+Les apostrophes de contraction (ex: don't, can't) ne sont pas confondues avec les guillemets de citation.
+Mais le guillemts de citation seul sont laissés tel quel.
 
 ## Auteur
 Erwann BEVEN

@@ -19,11 +19,10 @@ func transformer(texte string) string {
 		mots = appliquerAAn(mots)
 		mots = appliquerMarqueurs(mots)
 		
-		// 1. On réassemble la ligne avec des espaces simples
+	// Assemblage et corrections finales de ponctuation et guillemets
 		ligneTraitee := strings.Join(mots, " ")
-		
-		// 2. On applique la correction de la ponctuation
-		lignes[i] = corrigerPonctuation(ligneTraitee)
+		ligneTraitee = corrigerPonctuation(ligneTraitee)
+		lignes[i] = corrigerGuillemets(ligneTraitee)
 	}
 	return strings.Join(lignes, "\n")
 }
@@ -126,6 +125,7 @@ func capitaliser(mot string) string {
 	return string(lettres)
 }
 
+// appliquerAAn transforme le mot a devient an si le mot suivant commence par une voyelle (a, e, i, o, u) ou un h.
 func appliquerAAn(mots []string) []string {
 	for i := 0; i < len(mots); i++ {
 		if mots[i] == "a" || mots[i] == "A" {
@@ -157,6 +157,7 @@ func appliquerAAn(mots []string) []string {
 	return mots
 }
 
+// corrigerPonctuation corride les ponctuation simple (., ,, !, ?, :, ;) : Collée au mot précédent, suivie d'un espace. Et les groupes de ponctuation (..., !?) : Restent contigus et collés au mot précédent.
 func corrigerPonctuation(ligne string) string {
 	// 1. S'assurer qu'il y a un espace après un signe de ponctuation (s'il n'y en a pas déjà un)
 	// Exemple: "bonjour,tout" -> "bonjour, tout"
@@ -172,6 +173,23 @@ func corrigerPonctuation(ligne string) string {
 	// On peut cibler des cas fréquents comme les points de suspension espacés
 	reGroupes := regexp.MustCompile(`\.\s*\.\s*\.`)
 	ligne = reGroupes.ReplaceAllString(ligne, "...")
+
+	return ligne
+}
+
+// corrigerGuillemets Le texte situé à l'intérieur est collé contre les guillemets sans espaces superflus.
+func corrigerGuillemets(ligne string) string {
+	// Cette regex cherche un guillemet, des espaces éventuels, du texte, des espaces, et le guillemet fermant
+	// Et elle nettoie les espaces intérieurs en gardant les guillemets collés au texte
+	re := regexp.MustCompile(`'\s+([^']+?)\s+'`)
+	ligne = re.ReplaceAllString(ligne, "'$1'")
+
+	// On gère aussi le cas où il y a un espace d'un seul côté (ex: "' awesome'")
+	reGauche := regexp.MustCompile(`'\s+([^']+)`)
+	ligne = reGauche.ReplaceAllString(ligne, "'$1")
+
+	reDroite := regexp.MustCompile(`([^']+)\s+'`)
+	ligne = reDroite.ReplaceAllString(ligne, "$1'")
 
 	return ligne
 }
